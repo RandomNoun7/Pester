@@ -847,3 +847,31 @@ function ConvertTo-HashTableArray {
     }
 }
 
+function New-GherkinStep {
+    param(
+        [Parameter(Position = 4, Mandatory = $False)]
+        [Alias('Tags')]
+        [string[]]$Tag,
+
+        [string[]]$ExcludeTag,
+
+        [string] $OutputFile,
+
+        [Switch]$Quiet,
+
+        [switch]$PassThru
+
+    )
+    
+    begin{
+        foreach ($FeatureFile in & $SafeCommands["Get-ChildItem"] $Path -Filter "*.feature" -Recurse ) {
+            $Feature, $Background, $Scenarios = Import-GherkinFeature -Path $FeatureFile.FullName -Pester $Pester
+
+            [System.Management.Automation.PSCustomObject]@{
+                Feature    = $feature
+                Background = $Background
+                Scenario   = $Scenario
+            }
+        }
+    }
+}
